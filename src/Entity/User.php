@@ -56,6 +56,11 @@ class User implements UserInterface
      */
     private $leaderboards;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $username;
+
     public function __construct()
     {
         $this->leaderboards = new ArrayCollection();
@@ -181,6 +186,13 @@ class User implements UserInterface
                 $leaderboard->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
 
         return $this;
     }
