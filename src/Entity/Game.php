@@ -36,7 +36,7 @@ class Game
      */
     private $rounds;
 
-    public function __construct()
+    public function __construct(array $users)
     {
         $this->rounds = new ArrayCollection();
     }

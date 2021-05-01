@@ -6,6 +6,10 @@
         <form method="post" action="/logout">
             <button type="submit" class="btn btn-light">Sign out</button>
         </form>
+        <form method="post" action="/getIntoQueue">
+            <input type="hidden" name="userId" value="{{ app.user.getId }}">
+            <button type="submit" class="btn btn-light">Play</button>
+        </form>
     {% else %}
         <form method="post" action="/login">
             <button type="submit" class="btn btn-light">Sign in</button>
