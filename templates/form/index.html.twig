@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FormController!{% endblock %}
+
+{% block body %}
+<style>
+    body{
+        display: block;
+        margin: auto;
+        width: 500px;
+        margin-top:10px;
+    }
+
+    .square{
+        width: 25px;
+        height: 25px;
+        display: inline-block;
+        margin: 0px;
+        border: solid 1px black;
+    }
+
+    #boardOuter{
+        height: 225px;
+        width: 225px;
+        display: flex;
+        flex-wrap: wrap;
+        margin: auto;
+    }
+
+    #field{
+        width: 250px;
+        height: 250px;
+        display: inline-flex;
+        flex-wrap: wrap;
+        margin: auto;
+    }
+
+    #rows{
+        width: 250px;
+        height: 25px;
+        margin-left:24px;
+    }
+
+    #columns{
+        width: 23px;
+        display: inline-block;
+        height: 250px;
+        margin-top:1px;
+    }
+
+    .row{
+        display: flex;
+        width: 250px;
+        height: 25px;
+    }
+</style>
+
+    {% set area = forms[0].area%}
+    <div id='boardOuter'>
+        <div id="rows">
+        </div>
+        <div id="columns">
+        </div>
+        <div id='field'>
+        </div>
+    </div>
+
+    <script>
+        const field = document.getElementById('field');
+        const rows = document.getElementById('rows');
+        const columns = document.getElementById('columns');
+        const display = 'block';
+
+        const areaarr = {{ area|raw }};
+        const areaarray = JSON.parse(JSON.stringify(areaarr));
+        console.log(areaarray);
+
+            for (let i = 0; i < 10; ++i){
+                const row = document.createElement('DIV');
+                row.className = 'row';
+                for (let j = 0; j < 10; ++j){
+                    const square = document.createElement('DIV');
+                    square.className = 'square';
+                    square.style.backgroundColor = areaarray[i][j] === null ? 'white' : 'black';
+                    row.appendChild(square);
+                }
+                field.appendChild(row);
+            }
+    </script>
+
+{% endblock %}

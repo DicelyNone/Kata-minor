@@ -39,12 +39,12 @@ class Form
         return $this->id;
     }
 
-    public function getArea(): ?array
+    public function getArea()
     {
         return $this->area;
     }
 
-    public function setArea(array $area): self
+    public function setArea($area): self
     {
         $this->area = $area;
 
