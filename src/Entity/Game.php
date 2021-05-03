@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Game
 {
+    public const USERS_NUM = 2;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -39,6 +40,8 @@ class Game
     public function __construct(array $users)
     {
         $this->rounds = new ArrayCollection();
+        $this->user1 = $users[0];
+        $this->user2 = $users[1];
     }
 
     public function getId(): ?int

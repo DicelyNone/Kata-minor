@@ -7,7 +7,7 @@
             <button type="submit" class="btn btn-light">Sign out</button>
         </form>
         <form method="post" action="/getIntoQueue">
-            <input type="hidden" name="userId" value="{{ app.user.getId }}">
+            <input type="hidden" name="user" value="{{ app.user }}">
             <button type="submit" class="btn btn-light">Play</button>
         </form>
     {% else %}

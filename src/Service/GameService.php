@@ -11,19 +11,16 @@ use Doctrine\ORM\EntityManagerInterface;
 class GameService
 {
     private $entityManager;
-    private $gameRepository;
 
-    public function __construct(EntityManagerInterface $entityManager,
-                                QueueRepository $gameRepository)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->gameRepository = $gameRepository;
     }
 
-    // not User[] because of anonymous users
     public function initGame(array $waitingUsers)
     {
         $game = new Game($waitingUsers);
-        dump("game created");
+        $this->entityManager->persist($game);
+        $this->entityManager->flush();
     }
 }
