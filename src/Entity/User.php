@@ -13,6 +13,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
+
+    public const ROLE_APP_USER = 'ROLE_APP_USER';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    public const ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_APP_USER
+    ];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -47,9 +56,20 @@ class User implements UserInterface
      */
     private $leaderboards;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $username;
+
     public function __construct()
     {
         $this->leaderboards = new ArrayCollection();
+        $this->PersonalBest = new PersonalBest();
+    }
+
+    public function __toString()
+    {
+        return $this->username;
     }
 
     public function getId(): ?int
@@ -171,6 +191,13 @@ class User implements UserInterface
                 $leaderboard->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
 
         return $this;
     }

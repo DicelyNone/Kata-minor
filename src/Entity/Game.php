@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GameRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Game
 {
+    public const USERS_NUM = 2;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -19,21 +22,27 @@ class Game
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $user1;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $user2;
 
     /**
-     * @ORM\OneToOne(targetEntity=Form::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\OneToMany(targetEntity=Round::class, mappedBy="game")
      */
-    private $form;
+    private $rounds;
+
+    public function __construct(array $users)
+    {
+        $this->rounds = new ArrayCollection();
+        $this->user1 = $users[0];
+        $this->user2 = $users[1];
+    }
 
     public function getId(): ?int
     {
@@ -64,14 +73,32 @@ class Game
         return $this;
     }
 
-    public function getForm(): ?Form
+    /**
+     * @return Collection|Round[]
+     */
+    public function getRounds(): Collection
     {
-        return $this->form;
+        return $this->rounds;
     }
 
-    public function setForm(Form $form): self
+    public function addRound(Round $round): self
     {
-        $this->form = $form;
+        if (!$this->rounds->contains($round)) {
+            $this->rounds[] = $round;
+            $round->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRound(Round $round): self
+    {
+        if ($this->rounds->removeElement($round)) {
+            // set the owning side to null (unless already changed)
+            if ($round->getGame() === $this) {
+                $round->setGame(null);
+            }
+        }
 
         return $this;
     }
