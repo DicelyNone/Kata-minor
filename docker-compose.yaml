@@ -1,40 +1,66 @@
-version: '3.7'
+version: '2'
+
 services:
-    database:
-        image: 'mysql:5.7'
-        environment:
-            MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: main
+    mysql:
+        container_name: mysql
+        build: docker/mysql
         ports:
-            # To allow the host machine to access the ports below, modify the lines below.
-            # For example, to allow the host to connect to port 3306 on the container, you would change
-            # "3306" to "3306:3306". Where the first port is exposed to the host and the second is the container port.
-            # See https://docs.docker.com/compose/compose-file/#ports for more information.
-            - '3306'
+            - 3308:3306
+        restart: always
+        #privileged: true
+        volumes:
+            - ./docker/data/mysql:/var/lib/mysql:delegated,rw
+        environment:
+            MYSQL_ROOT_PASSWORD: mysql
+            MYSQL_DATABASE: student
+            MYSQL_USER: mysql
+            MYSQL_PASSWORD: mysql
+        networks:
+            - app
+        user: root
+    php:
+        container_name: php
+        build: docker/php/
+        ports:
+            - 9001:9000
+        restart: always
+        volumes:
+            - ./:/var/www/symfony:cached
+            - /etc/timezone:/etc/timezone:cached
+        networks:
+            - app
+    nginx:
+        container_name: nginx
+        build: docker/nginx/
+        ports:
+            - 82:80
+        restart: always
+        volumes_from:
+            - php
+        networks:
+            - app
+    cron:
+        container_name: cron
+        build: docker/cron/
+        restart: always
+        privileged: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - app
+        depends_on:
+            - php
     adminer:
+        container_name: adminer
         image: adminer
         restart: always
         ports:
             - 8088:8080
-    katamino:
-        image: 'mysql:5.7'
-        environment:
-            MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: main
-        ports:
-            # To allow the host machine to access the ports below, modify the lines below.
-            # For example, to allow the host to connect to port 3306 on the container, you would change
-            # "3306" to "3306:3306". Where the first port is exposed to the host and the second is the container port.
-            # See https://docs.docker.com/compose/compose-file/#ports for more information.
-            - '3306'
-    main:
-        image: 'mysql:5.7'
-        environment:
-            MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: main
-        ports:
-            # To allow the host machine to access the ports below, modify the lines below.
-            # For example, to allow the host to connect to port 3306 on the container, you would change
-            # "3306" to "3306:3306". Where the first port is exposed to the host and the second is the container port.
-            # See https://docs.docker.com/compose/compose-file/#ports for more information.
-            - '3306'
+
+networks:
+    app:
+        driver: bridge
+
+volumes:
+    data:
+        driver: local
