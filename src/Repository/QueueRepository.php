@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Queue;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -30,18 +31,17 @@ class QueueRepository extends ServiceEntityRepository
             ->setMaxResults(2)
             ->getQuery()
             ->getResult()
-        ;
+            ;
     }
 
-    /*
-    public function findOneBySomeField($value): ?Queue
+    public function getActiveQueueRowByUser(User $user): ?Queue
     {
         return $this->createQueryBuilder('q')
-            ->andWhere('q.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('q.user = :val')
+            ->andWhere('q.isWaiting = 1')
+            ->setParameter('val', $user)
             ->getQuery()
             ->getOneOrNullResult()
-        ;
+            ;
     }
-    */
 }

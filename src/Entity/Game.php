@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Game
 {
+    public const STATUS_PREPARED = 1;
+    public const STATUS_IN_PROGRESS = 2;
+    public const STATUS_ENDED = 3;
+
     public const USERS_NUM = 2;
     /**
      * @ORM\Id
@@ -21,13 +25,13 @@ class Game
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $user1;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $user2;
@@ -37,11 +41,19 @@ class Game
      */
     private $rounds;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $status;
+
+
+
     public function __construct(array $users)
     {
         $this->rounds = new ArrayCollection();
         $this->user1 = $users[0];
         $this->user2 = $users[1];
+        $this->status = $this::STATUS_PREPARED;
     }
 
     public function getId(): ?int
@@ -99,6 +111,18 @@ class Game
                 $round->setGame(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

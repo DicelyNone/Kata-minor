@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,4 +48,14 @@ class GameRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function getCurrentGame(User $user)
+    {
+        return $this->createQueryBuilder('g')
+            ->andWhere('g.user1 = :val')
+            ->orWhere('g.user2 = :val')
+            ->setParameter('val', $user)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
 }

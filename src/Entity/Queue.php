@@ -43,10 +43,10 @@ class Queue
         $this->isWaiting = true;
         // for authentificated users
         $this->user = $user;
-        // we really need to set username in sessionId field?..
-        //$this->sessionId = $user->getUsername();
+        $this->sessionId = $user->getUsername();
 
         // TODO queue for anonimous users
+        // $this->setSessionId('TempID');
     }
 
     public function getId(): ?int
