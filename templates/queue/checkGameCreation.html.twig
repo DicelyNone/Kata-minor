@@ -10,7 +10,6 @@ $(document).ready(function () {
             url: '/check-status',
             data: [],
             success: function (data) {
-                console.log(data['gameStatus']);
                 if (data['gameStatus'] === 1){
                     window.location.href = "{{ path('start') }}";
                 } else {

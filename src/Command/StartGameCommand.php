@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\QueueService;
+use App\Service\GameService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,12 +11,12 @@ class StartGameCommand extends Command
 {
     //  php bin/console app:start-game
     protected static $defaultName = 'app:start-game';
-    private $queueService;
+    private $gameService;
 
-    public function __construct(QueueService $queueService)
+    public function __construct(GameService $gameService)
     {
         parent::__construct();
-        $this->queueService = $queueService;
+        $this->gameService = $gameService;
     }
 
     protected function configure(): void
@@ -29,7 +29,7 @@ class StartGameCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($this->queueService->createGameForUsersInQueue()) return Command::SUCCESS;
+        if ($this->gameService->initGame()) return Command::SUCCESS;
         return Command::FAILURE;
     }
 }

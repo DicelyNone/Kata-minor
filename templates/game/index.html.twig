@@ -9,12 +9,180 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/deithor/noveo/Kata-minor/src/Controller/GameController.php'|file_link(0) }}">src/Controller/GameController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/deithor/noveo/Kata-minor/templates/game/index.html.twig'|file_link(0) }}">templates/game/index.html.twig</a></code></li>
-    </ul>
+    <h1>Welcome to the game! ✅</h1>
 </div>
+    <html>
+    <head>
+        <style>
+            #form  div {
+                position:relative;
+                height: 50px;
+                width: 50px;
+                border: 1px dashed gray;
+                display: inline-block;
+            }
+            #form {
+                width:280px;
+                height:208px;
+
+            }
+            #figure2 {
+                width:50px;
+                height:50px;
+                background-color: grey;
+            }
+            .figure div {
+                position:relative;
+                height: 50px;
+                width: 50px;
+                border: 1px dashed gray;
+                background-color: green;
+            }
+            .center {
+                display: inline-block;
+                background-color: green
+            }
+            .r1 {
+                display: inline-block;
+                background-color: green
+            }
+            .d1 {
+                background-color: green;
+            }
+        </style>
+        <script>
+
+            function redraw(){
+                let form = document.getElementById("form")
+                let divs = form.children;
+                for (let i = 0; i < 4; ++i){
+                    for (let j = 0; j < 5; ++j){
+                        if (formCells[i*5 + j] != 0) divs[i*5 + j].className = formCells[i*5 + j];
+                        else divs[i*5 + j].className = "formRect";
+                    }
+                }
+            }
+
+            function getMousePos(event) {
+                // 52  = rect's pixels + margin
+                if (event.target.className == "formRect") {
+                    //console.log(parseInt(event.clientX/52), parseInt(event.clientY/52));
+                }
+
+                else if (event.target.parentElement.className == "figure"){
+                    //console.log("figure is here: ",parseInt(event.clientX/52), parseInt(event.clientY/52));
+                }
+            }
+
+            function allowDrop(ev) {
+                ev.preventDefault();
+            }
+
+            function drag(ev) {
+                ev.dataTransfer.setData("sometext", ev.target.id);
+            }
+
+            function checkForEmptyPlace(figureClass, centerPos){
+//formCells
+                centerPos = parseInt(centerPos);
+                if (figureClass === "r1"){
+                    pos = centerPos + 1;
+                    if (pos % 5 === 0) return false;
+                }
+                else if (figureClass === "d1") {
+                    if (parseInt(centerPos/15) > 0) return false;
+                    pos = centerPos + 5;
+                }
+                else pos = centerPos;
+
+                console.log(formCells[pos]);
+                if (parseInt(formCells[pos]) === 0) return true;
+                else return false;
+            }
+
+            function drop(ev) {
+                ev.preventDefault();
+                // 4x5
+                let form = document.getElementById("form");
+                let data = ev.dataTransfer.getData("sometext");
+                let figure = document.getElementById(data);
+                let figureParts = figure.children;
+                let centerPos = ev.target.id;
+                let pos, formRect;
+                let emptyPlace = true;
+
+                for (let i = 0; i < figure.childElementCount; ++i) {
+                    emptyPlace = checkForEmptyPlace(figureParts[i].className, centerPos);
+                    console.log(figureParts[i].className, emptyPlace);
+                    if (!emptyPlace){
+                        break;
+                    }
+                }
+
+                if (emptyPlace) {
+                    for (let i = 0; i < figure.childElementCount; ++i) {
+                        switch (figureParts[i].className) {
+                            case "r1":
+                                pos = parseInt(centerPos) + 1;
+                                break;
+                            case "d1":
+                                pos = parseInt(centerPos) + 5;
+                                break;
+                            default:
+                                pos = centerPos;
+                        }
+                        //console.log(pos, "->", figureParts[i].className);
+                        formCells[pos] = figureParts[i].className;
+                    }
+                }
+                redraw(figure);
+
+                //ev.target.appendChild(document.getElementById(data));
+            }
+
+            var formCells = [ 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0];
+
+        </script>
+    </head>
+    <body>
+    <div id="field">
+
+        <div id="form" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="getMousePos(event)">
+            <div id="0" class="formRect"></div>
+            <div id="1" class="formRect"></div>
+            <div id="2" class="formRect"></div>
+            <div id="3" class="formRect"></div>
+            <div id="4" class="formRect"></div>
+            <div id="5" class="formRect"></div>
+            <div id="6" class="formRect"></div>
+            <div id="7" class="formRect"></div>
+            <div id="8" class="formRect"></div>
+            <div id="9" class="formRect"></div>
+            <div id="10" class="formRect"></div>
+            <div id="11" class="formRect"></div>
+            <div id="12" class="formRect"></div>
+            <div id="13" class="formRect"></div>
+            <div id="14" class="formRect"></div>
+            <div id="15" class="formRect"></div>
+            <div id="16" class="formRect"></div>
+            <div id="17" class="formRect"></div>
+            <div id="18" class="formRect"></div>
+            <div id="19" class="formRect"></div>
+        </div>
+    </div>
+    <br>
+    <div class="figure" id="figure1" draggable="true" ondragstart="drag(event)">
+        <div class="center"></div>
+        <div class="r1"></div>
+        <div class="d1"></div>
+    </div>
+    <br>
+    <div class="figure" id="figure2" draggable="true" ondragstart="drag(event)">
+        <div class="center"></div></div>
+
+    </body>
+    </html>
 {% endblock %}

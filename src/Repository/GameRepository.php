@@ -48,12 +48,14 @@ class GameRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function getCurrentGame(User $user)
+    public function getCurrentGame(User $user, int $status): ?Game
     {
         return $this->createQueryBuilder('g')
-            ->andWhere('g.user1 = :val')
-            ->orWhere('g.user2 = :val')
-            ->setParameter('val', $user)
+            ->andWhere('g.user2 = :user')
+            ->orWhere('g.user1 = :user')
+            ->andWhere('g.status = :status')
+            ->setParameter('user', $user)
+            ->setParameter('status', $status)
             ->getQuery()
             ->getOneOrNullResult()
             ;

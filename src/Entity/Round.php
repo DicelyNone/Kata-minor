@@ -28,7 +28,7 @@ class Round
     private $formOfUser2 = [];
 
     /**
-     * @ORM\ManyToOne(targetEntity=game::class, inversedBy="rounds")
+     * @ORM\ManyToOne(targetEntity=Game::class, inversedBy="rounds")
      */
     private $game;
 
@@ -36,6 +36,26 @@ class Round
      * @ORM\Column(type="boolean")
      */
     private $isActive;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $orderInGame;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Form::class)
+     */
+    private $form;
+
+    public function __construct(Game $game, Form $form, int $order)
+    {
+        $this->game = $game;
+        $this->form = $form;
+        $this->formOfUser1 = $form->getArea();
+        $this->formOfUser2 = $form->getArea();
+        $this->orderInGame = $order;
+        $this->isActive = true;
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +106,30 @@ class Round
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getOrderInGame(): ?int
+    {
+        return $this->orderInGame;
+    }
+
+    public function setOrderInGame(int $orderInGame): self
+    {
+        $this->orderInGame = $orderInGame;
+
+        return $this;
+    }
+
+    public function getForm(): ?form
+    {
+        return $this->form;
+    }
+
+    public function setForm(?form $form): self
+    {
+        $this->form = $form;
 
         return $this;
     }

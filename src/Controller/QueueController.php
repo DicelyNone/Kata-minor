@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
 use App\Entity\Queue;
 use App\Repository\GameRepository;
 use App\Repository\QueueRepository;
@@ -40,12 +41,11 @@ class QueueController extends AbstractController
     public function checkStatus(GameRepository $gameRepository): JsonResponse
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
-        $game = $gameRepository->getCurrentGame($user);
+        $game = $gameRepository->getCurrentGame($user, Game::STATUS_PREPARED);
 
         // $response = new RedirectResponse('http://example.com/');
 
         if ($game) {
-            dump($game);
             return new JsonResponse([
                 'gameId' => $game->getId(),
                 'gameStatus' => $game->getStatus(),
