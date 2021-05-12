@@ -43,8 +43,6 @@ class QueueController extends AbstractController
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $game = $gameRepository->getCurrentGame($user, Game::STATUS_PREPARED);
 
-        // $response = new RedirectResponse('http://example.com/');
-
         if ($game) {
             return new JsonResponse([
                 'gameId' => $game->getId(),

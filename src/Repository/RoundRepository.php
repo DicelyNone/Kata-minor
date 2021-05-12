@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Game;
 use App\Entity\Round;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,22 +20,20 @@ class RoundRepository extends ServiceEntityRepository
         parent::__construct($registry, Round::class);
     }
 
-    // /**
-    //  * @return Round[] Returns an array of Round objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return Round[] Returns an array of Round objects
+     */
+    public function findAllByGame(Game $game)
     {
         return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('r.game = :val')
+            ->setParameter('val', $game)
+            ->orderBy('r.orderInGame', 'ASC')
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+
 
     /*
     public function findOneBySomeField($value): ?Round
