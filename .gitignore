@@ -11,4 +11,5 @@
 ###< symfony/framework-bundle ###
 /tips.txt
 docker/data/
-/templates/game/test.html
+/templates/form/test.html
+/templates/form/test.html

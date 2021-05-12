@@ -47,6 +47,16 @@ class Round
      */
     private $form;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $scoreOfUser1;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $scoreOfUser2;
+
     public function __construct(Game $game, Form $form, int $order)
     {
         $this->game = $game;
@@ -55,6 +65,8 @@ class Round
         $this->formOfUser2 = $form->getArea();
         $this->orderInGame = $order;
         $this->isActive = true;
+        $this->scoreOfUser1 = 0;
+        $this->scoreOfUser2 = 0;
     }
 
     public function getId(): ?int
@@ -130,6 +142,30 @@ class Round
     public function setForm(?form $form): self
     {
         $this->form = $form;
+
+        return $this;
+    }
+
+    public function getScoreOfUser1(): ?int
+    {
+        return $this->scoreOfUser1;
+    }
+
+    public function setScoreOfUser1(int $scoreOfUser1): self
+    {
+        $this->scoreOfUser1 = $scoreOfUser1;
+
+        return $this;
+    }
+
+    public function getScoreOfUser2(): ?int
+    {
+        return $this->scoreOfUser2;
+    }
+
+    public function setScoreOfUser2(int $scoreOfUser2): self
+    {
+        $this->scoreOfUser2 = $scoreOfUser2;
 
         return $this;
     }
