@@ -8,7 +8,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/check-status',
-            data: [],
+            data: {},
             success: function (data) {
                 if (data['gameStatus'] === 1){
                     window.location.href = "{{ path('start') }}";

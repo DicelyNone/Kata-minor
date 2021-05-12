@@ -1,0 +1,25 @@
+<script>
+    $(document).ready(function () {
+        function runChecker() {
+            setTimeout(checkRoundStatus, 5000);
+        }
+
+        function checkRoundStatus() {
+            $.ajax({
+                type: 'POST',
+                url: '/check-status-end',
+                data: { roundId: {{ roundId }} },
+                success: function (data) {
+                    if (data['isActive'] === false){
+                        window.location.href = "{{ path('start') }}";
+                    } else {
+                        runChecker();
+                    }
+                },
+                dataType: 'json'
+            });
+        }
+
+        runChecker();
+    });
+</script>

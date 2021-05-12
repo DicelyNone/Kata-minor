@@ -18,7 +18,7 @@ class Game
     public const STATUS_ENDED = 3;
 
     public const USERS_NUM = 2;
-    public const ROUNDS_NUM = 2;
+    public const ROUNDS_NUM = 3;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

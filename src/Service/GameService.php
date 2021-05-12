@@ -56,7 +56,6 @@ class GameService
                 $form = $forms[rand(0, count($forms)-1)];
                 $round = new Round($game, $form, $i);
                 $this->entityManager->persist($round);
-                //$this->entityManager->flush();
                 $game->addRound($round);
             }
 
@@ -78,14 +77,35 @@ class GameService
 
     public function getResult(Game $game): array
     {
-        //$game = $this->gameRepository->find($gameId);
         $rounds = $this->roundRepository->findAllByGame($game);
+        $user1 = $game->getUser1();
+        $user2 = $game->getUser2();
 
         foreach ($rounds as $round) {
-            $result['user1'] = $round->getScoreOfUser1();
-            $result['user2'] = $round->getScoreOfUser2();
+            $result["$user1"][] = $round->getScoreOfUser1();
+            $result["$user2"][] = $round->getScoreOfUser2();
         }
 
         return $result;
+    }
+
+    public function getWinner(array $result): string
+    {
+        $bestScore = 0;
+        $winner = '';
+        foreach ($result as $user){
+            $score = 0;
+            foreach ($user as $roundScore){
+                $score += $roundScore;
+            }
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $winner = key($result);
+            } else if ($score === $bestScore) {
+                $bestScore = 0;
+                $winner = '';
+            }
+        }
+        return $winner;
     }
 }

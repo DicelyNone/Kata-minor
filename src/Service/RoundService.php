@@ -43,8 +43,10 @@ class RoundService
     public function getScoreFromForm(array $form): int
     {
         $score = 0;
-        foreach ($form as $square){
-            if ($square === null || $square === 0) {
+        dump($form);
+        foreach ($form as $row){
+            foreach($row as $square)
+            if ($square !== "" && $square !== "0") {
                 ++$score;
             }
         }
@@ -52,19 +54,27 @@ class RoundService
         return $score;
     }
 
-    public function getResult(Round $round): array
-    {
-
-
-        $result['user1'] = $round->getScoreOfUser1();
-        $result['user2'] = $round->getScoreOfUser2();
-
-        return $result;
-    }
-
     public function endRound(int $roundId)
     {
         $round = $this->roundRepository->find($roundId)->setIsActive(false);
+        $this->entityManager->persist($round);
+        $this->entityManager->flush();
+    }
+
+    public function updateFormOfUser(string $user, int $roundId, array $area)
+    {
+        $round = $this->roundRepository->find($roundId);
+        $game = $round->getGame();
+
+        if ($game->getUser1()->getUsername() === $user){
+            $round->setFormOfUser1($area);
+            $round->setScoreOfUser1($this->getScoreFromForm($area));
+
+        } else {
+            $round->setFormOfUser2($area);
+            $round->setScoreOfUser2($this->getScoreFromForm($area));
+        }
+
         $this->entityManager->persist($round);
         $this->entityManager->flush();
     }

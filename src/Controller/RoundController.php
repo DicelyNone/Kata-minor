@@ -42,16 +42,17 @@ class RoundController extends AbstractController
     }
 
     /**
-     * @Route("/round-result", name="round-result", methods={"POST", "GET"})
+     * @Route("/set-form", name="set-form", methods={"POST", "GET"})
      */
-    public function getRoundResult(GameService $gameService, Request $request)
+    public function setForm(RoundService $roundService, Request $request) : Response
     {
-        /*
-        $gameId = $request->request->get('gameId');
-        $result = $gameService->getResult($gameId);
-        return $this->render('game/end.html.twig', [
-            'result' => $result
-        ]);*/
+        $roundId = $request->request->get('roundId');
+        $user = $request->request->get('user');
+        $area = $request->request->get('area');
+
+        $roundService->updateFormOfUser($user, $roundId, $area);
+
+        return new Response();
     }
 
 }

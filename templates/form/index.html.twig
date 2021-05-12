@@ -1,223 +1,167 @@
 {% extends 'game/index.html.twig' %}
-
-{% block title %}Hello FormController!{% endblock %}
+{% block title %}Katamino Online Board Entertainment - KOBE{% endblock %}
 
 {% block body %}
-    <html>
-    <head>
-        <style>
-            #form  div {
-                position:relative;
-                height: 50px;
-                width: 50px;
-                border: 1px dashed gray;
-                display: inline-block;
-            }
-            #form {
-                width:280px;
-                height:208px;
+    {% include 'form/check-end.html.twig' %}
+    <style>
+        body {
+            display: block;
+            margin: auto;
+            width: 500px;
+            margin-top: 10px;
+        }
 
+        .square {
+            width: 25px;
+            height: 25px;
+            display: inline-block;
+            margin: 0px;
+            border: solid 1px black;
+        }
+
+        #field {
+            width: 250px;
+            height: 250px;
+            display: inline-flex;
+            flex-wrap: wrap;
+            margin: auto;
+        }
+
+        .row {
+            display: flex;
+            width: 250px;
+            height: 25px;
+        }
+
+        .enabled {
+            background-color: black;
+        }
+
+        .disabled {
+            background-color: white;
+        }
+
+        .figuresquare {
+            background-color: green;
+        }
+
+        .placedsquare {
+            background-color: green;
+        }
+
+        .inventory {
+            margin-top: 20px;
+        }
+    </style>
+
+    {% set area = forms[0].area %}
+    <div id='field'>
+    </div>
+
+    <script>
+        const field = document.getElementById('field');
+
+        const areaarr = {{ area|raw }};
+        const areaobject= JSON.parse(JSON.stringify(areaarr));
+        const areaarray = $.map(areaobject, function(value, index) {
+            return [value];
+        });
+        //const areaarray = JSON.parse(JSON.stringify(areaarr));
+        for (let i = 0; i < Object.keys(areaarray).length; ++i) {
+            const row = document.createElement('DIV');
+            row.className = 'row';
+            for (let j = 0; j < Object.keys(areaarray[i]).length; ++j) {
+                const square = document.createElement('DIV');
+                square.className = 'square';
+                square.id = i.toString() + j.toString();
+                if (areaarray[i][j] === null)
+                    square.classList.add('disabled');
+                else
+                    square.classList.add('enabled');
+                row.appendChild(square);
             }
-            #figure2 {
-                width:50px;
-                height:50px;
-                background-color: grey;
-            }
-            .figure div {
-                position:relative;
-                height: 50px;
-                width: 50px;
-                border: 1px dashed gray;
-                background-color: green;
-            }
-            .center {
-                display: inline-block;
-                background-color: green
-            }
-            .r1 {
-                display: inline-block;
-                background-color: green
-            }
-            .d1 {
-                background-color: green;
-            }
-        </style>
+            field.appendChild(row);
+        }
+    </script>
+    <div class="inventory" id="inventory">
         <script>
-
-            $(document).ready(function () {
-                function runChecker() {
-                    setTimeout(checkRoundStatus, 5000);
+            const inv = document.getElementById("inventory")
+            for (let i = 0; i < 3; ++i) {
+                const row = document.createElement('DIV');
+                row.className = 'row';
+                for (let j = 0; j < 10; ++j) {
+                    const square = document.createElement('DIV');
+                    square.className = 'square figuresquare';
+                    row.appendChild(square);
                 }
+                inv.appendChild(row);
+            }
+        </script>
+    </div>
+    <script>
+        $(function () {
+            $(".enabled").droppable({
+                out: function () {
+                    $(this).data("outside", true);
+                },
+                over: function () {
+                    $(this).data("outside", false);
+                },
+                drop: function (event, ui) {
+                    $(this)
+                        .draggable()
+                        .addClass("figuresquare")
+                        .draggable("enable")
+                        .css("position", "relative")
+                        .droppable("disable")
+                    /*rownum, colnum - where figure was dragged FROM, 2 - TO*/
+                    const rownum = ui.draggable.attr("id") ? ui.draggable.attr("id").charAt(0) : null
+                    const rownum2 = $(this).attr("id").charAt(0)
+                    const colnum = rownum ? ui.draggable.attr("id").charAt(1) : null
+                    const colnum2 = $(this).attr("id").charAt(1)
+                    if (rownum) {
+                        areaarray[rownum][colnum] = 0
+                    }
+                    areaarray[rownum2][colnum2] = 1
+                    $(this).draggable({revert: true})
+                    ui.draggable.removeClass("figuresquare")
+                    ui.draggable.draggable("disable")
+                    ui.draggable.attr("style", "")
+                    ui.draggable.clone().addClass("placedsquare")
+                    /*TODO: return figures to inventory when dragged outside the form
+                    if (ui.draggable.parent().parent().hasClass("inventory"))
+                        ui.draggable.remove()
+                    else*/
+                    if (!ui.draggable.parent().parent().hasClass("inventory"))
+                        ui.draggable.droppable("enable")
+                    let hasEmptySquares = false;
+                    $.each(areaarray, function( index, value ) {
+                        if (jQuery.inArray(0, value) !== -1) {
+                            hasEmptySquares = true;
+                            return false;
+                        }
+                    });
+                    if (hasEmptySquares === false) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/end-round',
+                            data: { roundId: {{ roundId }}, user: {{ app.user }}  },
+                            dataType: 'json'
+                        });
+                    }
 
-                function checkRoundStatus() {
                     $.ajax({
                         type: 'POST',
-                        url: '/check-status-end',
-                        data: { roundId: {{ roundId }} },
-                        success: function (data) {
-                            if (data['isActive'] === false){
-                                window.location.href = "{{ path('start') }}";
-                            } else {
-                                runChecker();
-                            }
-                        },
+                        url: '/set-form',
+                        data: { roundId: {{ roundId }}, user: {{ app.user }}, area: areaarray},
                         dataType: 'json'
                     });
                 }
-
-                runChecker();
             });
 
-            function redraw(){
-                let form = document.getElementById("form")
-                let divs = form.children;
-                for (let i = 0; i < 4; ++i){
-                    for (let j = 0; j < 5; ++j){
-                        if (formCells[i*5 + j] != 0) divs[i*5 + j].className = formCells[i*5 + j];
-                        else divs[i*5 + j].className = "formRect";
-                    }
-                }
-            }
-
-            function getMousePos(event) {
-                // 52  = rect's pixels + margin
-                if (event.target.className == "formRect") {
-                    //console.log(parseInt(event.clientX/52), parseInt(event.clientY/52));
-                }
-
-                else if (event.target.parentElement.className == "figure"){
-                    //console.log("figure is here: ",parseInt(event.clientX/52), parseInt(event.clientY/52));
-                }
-            }
-
-            function allowDrop(ev) {
-                ev.preventDefault();
-            }
-
-            function drag(ev) {
-                ev.dataTransfer.setData("sometext", ev.target.id);
-            }
-
-            function checkForEmptyPlace(figureClass, centerPos){
-//formCells
-                centerPos = parseInt(centerPos);
-                if (figureClass === "r1"){
-                    pos = centerPos + 1;
-                    if (pos % 5 === 0) return false;
-                }
-                else if (figureClass === "d1") {
-                    if (parseInt(centerPos/15) > 0) return false;
-                    pos = centerPos + 5;
-                }
-                else pos = centerPos;
-
-                console.log(formCells[pos]);
-                if (parseInt(formCells[pos]) === 0) return true;
-                else return false;
-            }
-
-            function checkForMyWin(){
-                for(let i = 0; i < formCells.length; ++i){
-                    if (formCells[i] === 0){
-                        return true;
-                    }
-                }
-                // else win !
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/end-round',
-                    data: { roundId: {{ roundId }}, user: {{ app.user }}  },
-                    dataType: 'json'
-                });
-            }
-
-            function drop(ev) {
-                ev.preventDefault();
-                // 4x5
-                let form = document.getElementById("form");
-                let data = ev.dataTransfer.getData("sometext");
-                let figure = document.getElementById(data);
-                let figureParts = figure.children;
-                let centerPos = ev.target.id;
-                let pos, formRect;
-                let emptyPlace = true;
-
-                for (let i = 0; i < figure.childElementCount; ++i) {
-                    emptyPlace = checkForEmptyPlace(figureParts[i].className, centerPos);
-                    console.log(figureParts[i].className, emptyPlace);
-                    if (!emptyPlace){
-                        break;
-                    }
-                }
-
-                if (emptyPlace) {
-                    for (let i = 0; i < figure.childElementCount; ++i) {
-                        switch (figureParts[i].className) {
-                            case "r1":
-                                pos = parseInt(centerPos) + 1;
-                                break;
-                            case "d1":
-                                pos = parseInt(centerPos) + 5;
-                                break;
-                            default:
-                                pos = centerPos;
-                        }
-                        //console.log(pos, "->", figureParts[i].className);
-                        formCells[pos] = figureParts[i].className;
-                    }
-                }
-                redraw(figure);
-
-                checkForMyWin();
-
-                //ev.target.appendChild(document.getElementById(data));
-            }
-
-            var formCells = [ 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0];
-
-        </script>
-    </head>
-    <body>
-    <div id="field">
-
-        <div id="form" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="getMousePos(event)">
-            <div id="0" class="formRect"></div>
-            <div id="1" class="formRect"></div>
-            <div id="2" class="formRect"></div>
-            <div id="3" class="formRect"></div>
-            <div id="4" class="formRect"></div>
-            <div id="5" class="formRect"></div>
-            <div id="6" class="formRect"></div>
-            <div id="7" class="formRect"></div>
-            <div id="8" class="formRect"></div>
-            <div id="9" class="formRect"></div>
-            <div id="10" class="formRect"></div>
-            <div id="11" class="formRect"></div>
-            <div id="12" class="formRect"></div>
-            <div id="13" class="formRect"></div>
-            <div id="14" class="formRect"></div>
-            <div id="15" class="formRect"></div>
-            <div id="16" class="formRect"></div>
-            <div id="17" class="formRect"></div>
-            <div id="18" class="formRect"></div>
-            <div id="19" class="formRect"></div>
-        </div>
-    </div>
-    <br>
-    <div class="figure" id="figure1" draggable="true" ondragstart="drag(event)">
-        <div class="center"></div>
-        <div class="r1"></div>
-        <div class="d1"></div>
-    </div>
-    <br>
-    <div class="figure" id="figure2" draggable="true" ondragstart="drag(event)">
-        <div class="center"></div></div>
-
-    </body>
-    </html>
-
+            $(".figuresquare").draggable({
+                helper: "clone"
+            });
+        });
+    </script>
 {% endblock %}

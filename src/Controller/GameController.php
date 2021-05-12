@@ -41,8 +41,10 @@ class GameController extends AbstractController
         }
 
         $result = $gameService->getResult($game);
+        $winner = $gameService->getWinner($result);
         return $this->render('game/end.html.twig', [
-            'rusult' => $result
+            'result' => $result,
+            'winner' => $winner
         ]);
     }
 }
