@@ -54,7 +54,7 @@
         }
     </style>
 
-    {% set area = forms[0].area %}
+    {% set area = forms[random(forms|length-1)].area %}
     <h3>Раунд {{ roundOrder+1 }}</h3>
     <div id='field'>
     </div>
@@ -67,7 +67,6 @@
         const areaarray = $.map(areaobject, function(value, index) {
             return [value];
         });
-        //const areaarray = JSON.parse(JSON.stringify(areaarr));
         for (let i = 0; i < Object.keys(areaarray).length; ++i) {
             const row = document.createElement('DIV');
             row.className = 'row';
@@ -92,7 +91,7 @@
                 row.className = 'row';
                 for (let j = 0; j < 10; ++j) {
                     const square = document.createElement('DIV');
-                    square.className = 'square figuresquare';
+                    square.className = 'square figuresquare invsquare';
                     row.appendChild(square);
                 }
                 inv.appendChild(row);
@@ -101,13 +100,33 @@
     </div>
     <script>
         $(function () {
+            $("#field").droppable({
+                accept: ".figuresquare",
+                tolerance: "pointer",
+                out: function (event, ui) {
+                    $(ui.helper).mouseup(function (e) {
+                        if (!ui.draggable.hasClass("invsquare"))
+                            $(".invsquare").each(function(){
+                                if (!$(this).hasClass("figuresquare")){
+                                    $(this).addClass("figuresquare")
+                                    $(this).draggable("enable")
+                                    const rownum = e.target.id.charAt(0)
+                                    const colnum = e.target.id.charAt(1)
+                                    areaarray[rownum][colnum]=0
+                                    ui.draggable.removeClass("figuresquare")
+                                    ui.draggable.addClass("enabled")
+                                    ui.draggable.draggable("disable")
+                                    ui.draggable.droppable("enable")
+                                    return false;
+                                }
+                            })
+                    });
+                },
+                over: function (event, ui) {
+                    $(ui.helper).unbind("mouseup");
+                }
+            })
             $(".enabled").droppable({
-                out: function () {
-                    $(this).data("outside", true);
-                },
-                over: function () {
-                    $(this).data("outside", false);
-                },
                 drop: function (event, ui) {
                     $(this)
                         .draggable()
@@ -124,16 +143,12 @@
                         areaarray[rownum][colnum] = 0
                     }
                     areaarray[rownum2][colnum2] = 1
-                    $(this).draggable({revert: true})
+                    $(this).draggable({revert: true, revertDuration: 0})
                     ui.draggable.removeClass("figuresquare")
                     ui.draggable.draggable("disable")
                     ui.draggable.attr("style", "")
                     ui.draggable.clone().addClass("placedsquare")
-                    /*TODO: return figures to inventory when dragged outside the form
-                    if (ui.draggable.parent().parent().hasClass("inventory"))
-                        ui.draggable.remove()
-                    else*/
-                    if (!ui.draggable.parent().parent().hasClass("inventory"))
+                    if (!ui.draggable.hasClass("invsquare"))
                         ui.draggable.droppable("enable")
                     let hasEmptySquares = false;
                     $.each(areaarray, function( index, value ) {
