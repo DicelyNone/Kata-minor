@@ -20,7 +20,7 @@ class QueueController extends AbstractController
     /**
      * @Route("/get-into-queue", name="get_into_queue")
      */
-    public function create(QueueRepository $queueRepository, Request $request): Response
+    public function create(GameService $gameService, QueueRepository $queueRepository, Request $request): Response
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
 
@@ -34,6 +34,8 @@ class QueueController extends AbstractController
         if ($queue){
             $queue->setIsWaiting(false);
         }
+
+        $gameService->finishPreviousGames($user);
 
         $queueNext = new Queue($user);
         $entityManager = $this->getDoctrine()->getManager();

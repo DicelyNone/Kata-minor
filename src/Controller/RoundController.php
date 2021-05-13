@@ -39,7 +39,8 @@ class RoundController extends AbstractController
 //        dump($round);
 
         return new JsonResponse([
-            'isActive' => $round->getIsActive()
+            'isActive' => $round->getIsActive(),
+            'gameStatus' => $round->getGame()->getStatus()
         ]);
     }
 

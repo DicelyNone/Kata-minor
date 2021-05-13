@@ -45,4 +45,22 @@ class GameRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getOneOrNullResult();
     }
+
+    public function findAllUnfinishedGames(User $user): array
+    {
+        $queryBuilder = $this->createQueryBuilder('g');
+
+        $queryBuilder
+            ->orWhere(
+                $queryBuilder->expr()->eq('g.user1', ':user'),
+                $queryBuilder->expr()->eq('g.user2', ':user')
+            )
+            ->andWhere(
+                $queryBuilder->expr()->eq('g.status', ':status')
+            )
+            ->setParameter('user', $user)
+            ->setParameter('status', Game::STATUS_PREPARED);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

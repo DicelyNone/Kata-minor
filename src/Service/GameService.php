@@ -37,6 +37,16 @@ class GameService
         $this->roundRepository = $roundRepository;
     }
 
+    public function finishPreviousGames(User $user)
+    {
+        $games = $this->gameRepository->findAllUnfinishedGames($user);
+        foreach ($games as $game) {
+            $game->setStatus(Game::STATUS_ENDED);
+            $this->entityManager->persist($game);
+        }
+        $this->entityManager->flush();
+    }
+
     public function initGame(): bool
     {
         $waitingUsers = $this->queueRepository->getTwoWaitingUsers();
@@ -57,7 +67,6 @@ class GameService
 
         $game = new Game($users);
         $this->entityManager->persist($game);
-        //$this->entityManager->flush();
 
         $forms = $this->formRepository->findAll();
 
