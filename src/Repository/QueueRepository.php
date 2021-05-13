@@ -26,7 +26,7 @@ class QueueRepository extends ServiceEntityRepository
     public function getTwoWaitingUsers()
     {
         return $this->createQueryBuilder('q')
-            ->andWhere('q.isWaiting = 1')
+            ->andWhere('q.isWaiting = true')
             ->orderBy('q.createdAt', 'ASC')
             ->setMaxResults(2)
             ->getQuery()
@@ -38,7 +38,7 @@ class QueueRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('q')
             ->andWhere('q.user = :val')
-            ->andWhere('q.isWaiting = 1')
+            ->andWhere('q.isWaiting = true')
             ->setParameter('val', $user)
             ->getQuery()
             ->getOneOrNullResult()
