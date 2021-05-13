@@ -10,7 +10,9 @@
                 url: '/check-status-end',
                 data: { roundId: {{ roundId }} },
                 success: function (data) {
-                    if (data['isActive'] === false){
+                    if (data['isActive'] === false ||
+                        data['gameStatus'] === 3){
+
                         window.location.href = "{{ path('start') }}";
                     } else {
                         runChecker();
