@@ -12,6 +12,7 @@ use App\Repository\GameRepository;
 use App\Repository\QueueRepository;
 use App\Repository\RoundRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\User\User;
 
 class GameService
 {
@@ -93,14 +94,14 @@ class GameService
     {
         $bestScore = 0;
         $winner = '';
-        foreach ($result as $user){
+        foreach ($result as $user => $scores){
             $score = 0;
-            foreach ($user as $roundScore){
+            foreach ($scores as $roundScore){
                 $score += $roundScore;
             }
             if ($score > $bestScore) {
                 $bestScore = $score;
-                $winner = key($result);
+                $winner = $user;
             } else if ($score === $bestScore) {
                 $bestScore = 0;
                 $winner = '';
