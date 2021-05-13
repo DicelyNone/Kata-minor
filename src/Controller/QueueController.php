@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 class QueueController extends AbstractController
 {
     /**
-     * @Route("/getIntoQueue", name="getIntoQueue")
+     * @Route("/get-into-queue", name="get_into_queue")
      */
     public function create(QueueRepository $queueRepository, Request $request): Response
     {
@@ -30,12 +30,14 @@ class QueueController extends AbstractController
 
         //$user = $this->getUser();
         $queue = $queueRepository->getActiveQueueRowByUser($user);
+
         if ($queue){
             $queue->setIsWaiting(false);
         }
 
         $queueNext = new Queue($user);
         $entityManager = $this->getDoctrine()->getManager();
+
         $entityManager->persist($queueNext);
         $entityManager->flush();
 
@@ -56,6 +58,7 @@ class QueueController extends AbstractController
                 'gameStatus' => $game->getStatus(),
             ]);
         }
+
         return new JsonResponse();
     }
 }
