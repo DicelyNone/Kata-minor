@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\Queue;
+use App\Entity\User;
 use App\Repository\GameRepository;
 use App\Repository\QueueRepository;
 use App\Service\GameService;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class QueueController extends AbstractController
 {
@@ -21,6 +23,11 @@ class QueueController extends AbstractController
     public function create(QueueRepository $queueRepository, Request $request): Response
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
+
+        if (!($user instanceof User)) {
+            throw new AuthenticationException();
+        }
+
         //$user = $this->getUser();
         $queue = $queueRepository->getActiveQueueRowByUser($user);
         if ($queue){

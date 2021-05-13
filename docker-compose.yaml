@@ -1,44 +1,43 @@
-version: '2'
+version: '3'
 
 services:
-    mysql:
-        container_name: mysql
-        build: docker/mysql
-        ports:
-            - 3308:3306
-        restart: always
-        #privileged: true
-        volumes:
-            - ./docker/data/mysql:/var/lib/mysql:delegated,rw
-        environment:
-            MYSQL_ROOT_PASSWORD: mysql
-            MYSQL_DATABASE: student
-            MYSQL_USER: mysql
-            MYSQL_PASSWORD: mysql
-        networks:
-            - app
-        user: root
     php:
-        container_name: php
-        build: docker/php/
-        ports:
-            - 9001:9000
-        restart: always
+        image: webdevops/php-nginx-dev:7.4
         volumes:
-            - ./:/var/www/symfony:cached
-            - /etc/timezone:/etc/timezone:cached
-        networks:
-            - app
-    nginx:
-        container_name: nginx
-        build: docker/nginx/
+            - ./:/app
+            - ~/.ssh:/home/application/.ssh
+        working_dir: /app
+        environment:
+            WEB_DOCUMENT_ROOT: /app/public
+            WEB_DOCUMENT_INDEX: index.php
+            PHP_MAX_EXECUTION_TIME: 3600
+            PHP_DISPLAY_ERRORS: 1
+            COMPOSER_MEMORY_LIMIT: -1
+            DOMAIN_NAME: ${DOMAIN_NAME}
+            VIRTUAL_HOST: ${DOMAIN_NAME}
+            APPLICATION_UID: shell id -u
+            APPLICATION_GID: shell id -g
+            PHP_DEBUGGER: xdebug
+            XDEBUG_REMOTE_AUTOSTART: 1
+            COMPOSER_VERSION: 2
         ports:
-            - 82:80
-        restart: always
-        volumes_from:
-            - php
+            - ${ENGINE_PORT}:80
+        depends_on:
+            - database
         networks:
-            - app
+            - appnet
+
+    database:
+        image: postgres:13
+        volumes:
+            - ./docker/postgres_data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_PASSWORD: ${ROOT_PASSWORD}
+            POSTGRES_DB: ${DATABASE_NAME}
+        ports:
+            - 5439:5432
+        networks:
+            - appnet
     cron:
         container_name: cron
         build: docker/cron/
@@ -47,20 +46,14 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         networks:
-            - app
+            - appnet
         depends_on:
             - php
-    adminer:
-        container_name: adminer
-        image: adminer
-        restart: always
-        ports:
-            - 8088:8080
 
 networks:
-    app:
-        driver: bridge
+    appnet:
+        driver: "bridge"
 
 volumes:
-    data:
-        driver: local
+    mysql_data:
+        driver: "local"

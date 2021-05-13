@@ -42,26 +42,26 @@ class GameService
             dump("not enough users for game");
             return false;
         }
-        else {
-            foreach ($waitingUsers as $userInQueue) {
-                $userInQueue->setIsWaiting(false);
-                $users[] = $userInQueue->getUser();
-            }
 
-            $game = new Game($users);
-            $this->entityManager->persist($game);
-            //$this->entityManager->flush();
-
-            $forms = $this->formRepository->findAll();
-            for ($i = 0; $i < Game::ROUNDS_NUM; ++$i){
-                $form = $forms[rand(0, count($forms)-1)];
-                $round = new Round($game, $form, $i);
-                $this->entityManager->persist($round);
-                $game->addRound($round);
-            }
-
-            $this->entityManager->flush();
+        foreach ($waitingUsers as $userInQueue) {
+            $userInQueue->setIsWaiting(false);
+            $users[] = $userInQueue->getUser();
         }
+
+        $game = new Game($users);
+        $this->entityManager->persist($game);
+        //$this->entityManager->flush();
+
+        $forms = $this->formRepository->findAll();
+
+        for ($i = 0; $i < Game::ROUNDS_NUM; ++$i){
+            $form = $forms[rand(0, count($forms)-1)];
+            $round = new Round($game, $form, $i);
+            $this->entityManager->persist($round);
+            $game->addRound($round);
+        }
+
+        $this->entityManager->flush();
         return true;
     }
 
