@@ -36,6 +36,8 @@ class RoundController extends AbstractController
         $roundId = $request->request->get('roundId');
         $round = $roundRepository->find($roundId);
 
+//        dump($round);
+
         return new JsonResponse([
             'isActive' => $round->getIsActive()
         ]);

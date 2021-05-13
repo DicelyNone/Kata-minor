@@ -7,12 +7,6 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @method Queue|null find($id, $lockMode = null, $lockVersion = null)
- * @method Queue|null findOneBy(array $criteria, array $orderBy = null)
- * @method Queue[]    findAll()
- * @method Queue[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class QueueRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -20,10 +14,7 @@ class QueueRepository extends ServiceEntityRepository
         parent::__construct($registry, Queue::class);
     }
 
-    /**
-     * @return Queue[] Returns an array of Queue objects
-     */
-    public function getTwoWaitingUsers()
+    public function getTwoWaitingUsers(): array
     {
         return $this->createQueryBuilder('q')
             ->andWhere('q.isWaiting = true')

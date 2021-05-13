@@ -29,7 +29,10 @@ class StartGameCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($this->gameService->initGame()) return Command::SUCCESS;
+        if ($this->gameService->initGame()) {
+            return Command::SUCCESS;
+        }
+
         return Command::FAILURE;
     }
 }
