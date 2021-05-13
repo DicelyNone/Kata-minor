@@ -35,6 +35,7 @@ class GameController extends AbstractController
                         'forms' => $forms,
                         'roundId' => $round->getId(),
                         'gameId' => $game->getId(),
+                        'roundOrder' => $round->getOrderInGame()
                     ]
                 );
             }
