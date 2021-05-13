@@ -29,9 +29,10 @@ class Form
      */
     private $figures;
 
-    public function __construct()
+    public function __construct(string $area)
     {
         $this->figures = new ArrayCollection();
+        $this->area = $area;
     }
 
     public function getId(): ?int

@@ -39,6 +39,7 @@ install:
 	make create-db
 	make update-schema
 	make cc
+	make app-install
 
 update:
 	git pull
@@ -48,3 +49,6 @@ update:
 
 sg:
 	docker-compose exec -T --user=application php bin/console app:start-game
+
+app-install:
+	docker-compose exec -T --user=application php bin/console app:install
