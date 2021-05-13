@@ -23,7 +23,26 @@ class GameRepository extends ServiceEntityRepository
             ->setParameter('user', $user)
             ->setParameter('status', $status)
             ->getQuery()
-            ->getOneOrNullResult()
-            ;
+            ->getOneOrNullResult();
+    }
+
+    public function findLastFinishedGame(User $user): ?Game
+    {
+        $queryBuilder = $this->createQueryBuilder('g');
+
+        $queryBuilder
+            ->orWhere(
+                $queryBuilder->expr()->eq('g.user1', ':user'),
+                $queryBuilder->expr()->eq('g.user2', ':user')
+            )
+            ->andWhere(
+                $queryBuilder->expr()->eq('g.status', ':status')
+            )
+            ->setParameter('user', $user)
+            ->setParameter('status', Game::STATUS_ENDED)
+            ->addOrderBy('g.id', 'DESC')
+            ->setMaxResults(1);
+
+        return $queryBuilder->getQuery()->getOneOrNullResult();
     }
 }

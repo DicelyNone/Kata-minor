@@ -4,12 +4,12 @@ namespace App\Service;
 
 use App\Entity\Game;
 use App\Entity\Round;
+use App\Entity\User;
 use App\Repository\FormRepository;
 use App\Repository\GameRepository;
 use App\Repository\QueueRepository;
 use App\Repository\RoundRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\User\User;
 
 class GameService
 {
@@ -70,6 +70,8 @@ class GameService
             $game->addRound($round);
         }
 
+        $game->setStatus(Game::STATUS_PREPARED);
+
         $this->entityManager->flush();
 
         return true;
@@ -78,13 +80,21 @@ class GameService
     public function startRound(Game $game): ?Round
     {
         $rounds = $game->getRounds();
+
         foreach ($rounds as $round) {
             if ($round->getIsActive()) {
                 return $round;
             }
         }
 
+        $this->endGame($game);
+
         return null;
+    }
+
+    public function getLastFinishedGame(User $user): ?Game
+    {
+        return $this->gameRepository->findLastFinishedGame($user);
     }
 
     public function getResult(Game $game): array
@@ -105,22 +115,31 @@ class GameService
     {
         $bestScore = 0;
         $winner = '';
+
         foreach ($result as $user => $scores) {
             $score = 0;
+
             foreach ($scores as $roundScore) {
                 $score += $roundScore;
             }
+
             if ($score > $bestScore) {
                 $bestScore = $score;
                 $winner = $user;
-            } else {
-                if ($score === $bestScore) {
-                    $bestScore = 0;
-                    $winner = '';
-                }
+            } elseif ($score === $bestScore) {
+                $bestScore = 0;
+                $winner = '';
             }
         }
 
         return $winner;
+    }
+
+    public function endGame(Game $game): void
+    {
+        $game->setStatus(GAME::STATUS_ENDED);
+
+        $this->entityManager->persist($game);
+        $this->entityManager->flush();
     }
 }
