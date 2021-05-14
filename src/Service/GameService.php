@@ -3,12 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Game;
+use App\Entity\PersonalBest;
 use App\Entity\Round;
 use App\Entity\User;
 use App\Repository\FormRepository;
 use App\Repository\GameRepository;
 use App\Repository\QueueRepository;
 use App\Repository\RoundRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GameService
@@ -23,18 +25,22 @@ class GameService
 
     private $roundRepository;
 
+    private $userRepository;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         GameRepository $gameRepository,
         QueueRepository $queueRepository,
         FormRepository $formRepository,
-        RoundRepository $roundRepository
+        RoundRepository $roundRepository,
+        UserRepository $userRepository
     ) {
         $this->entityManager = $entityManager;
         $this->gameRepository = $gameRepository;
         $this->queueRepository = $queueRepository;
         $this->formRepository = $formRepository;
         $this->roundRepository = $roundRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function finishPreviousGames(User $user)
@@ -108,6 +114,21 @@ class GameService
         return $this->gameRepository->findLastFinishedGame($user);
     }
 
+    public function updatePersonalBestScore(User $user, array $result)
+    {
+        $personalBest = $user->getPersonalBest();
+        $gameScore = 0;
+        foreach ($result as $score){
+            $gameScore += $score;
+        }
+        if ($personalBest->getBestScore() < $gameScore){
+            $personalBest->setBestScore($gameScore);
+            $this->entityManager->persist($personalBest);
+            $this->entityManager->flush();
+        }
+
+    }
+
     public function getResult(Game $game): array
     {
         $rounds = $this->roundRepository->findAllByGame($game);
@@ -118,6 +139,9 @@ class GameService
             $result["$user1"][] = $round->getScoreOfUser1();
             $result["$user2"][] = $round->getScoreOfUser2();
         }
+
+        $this->updatePersonalBestScore($user1, $result["$user1"]);
+        $this->updatePersonalBestScore($user2, $result["$user2"]);
 
         return $result;
     }
@@ -142,6 +166,12 @@ class GameService
                 $winner = '';
             }
         }
+
+        $user = $this->userRepository->findByUsername($winner);
+        $personalBest = $user->getPersonalBest();
+        $personalBest->setNumOfWins($personalBest->getNumOfWins()+1);
+        $this->entityManager->persist($personalBest);
+        $this->entityManager->flush();
 
         return $winner;
     }

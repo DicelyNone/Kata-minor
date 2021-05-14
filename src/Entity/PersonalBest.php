@@ -27,6 +27,12 @@ class PersonalBest
      */
     private $bestScore;
 
+    public function __construct()
+    {
+        $this->bestScore = 0;
+        $this->numOfWins = 0;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
