@@ -49,14 +49,32 @@ class GameController extends AbstractController
         if ($finishedGame) {
             $result = $gameService->getResult($finishedGame);
             $winner = $gameService->getWinner($result);
+            $bestScore = $gameService->getBestScoreFromResult($result);
 
             return $this->render(
                 'game/end.html.twig',
                 [
                     'result' => $result,
                     'winner' => $winner,
+                    'bestScore' => $bestScore,
                 ]
             );
         }
+    }
+
+    /**
+     * @Route("/set-result", name="set-result")
+     */
+    public function setResult(GameService $gameService, RoundService $roundService, Request $request): Response
+    {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $winner = $request->request->get('winner');
+        $result = $request->request->get('result');
+
+        if ($user->getUsername() === $winner){
+            $gameService->setWin($user, $result);
+        }
+
+        return new Response();
     }
 }

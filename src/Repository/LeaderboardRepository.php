@@ -12,4 +12,13 @@ class LeaderboardRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Leaderboard::class);
     }
+
+    public function findLeaders(int $numOfLeaders): array
+    {
+        return $this->createQueryBuilder('q')
+            ->orderBy('q.result', 'DESC')
+            ->setMaxResults($numOfLeaders)
+            ->getQuery()
+            ->getResult();
+    }
 }

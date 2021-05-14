@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Game;
+use App\Entity\Leaderboard;
 use App\Entity\PersonalBest;
 use App\Entity\Round;
 use App\Entity\User;
@@ -167,13 +168,28 @@ class GameService
             }
         }
 
-        $user = $this->userRepository->findByUsername($winner);
-        $personalBest = $user->getPersonalBest();
-        $personalBest->setNumOfWins($personalBest->getNumOfWins()+1);
-        $this->entityManager->persist($personalBest);
-        $this->entityManager->flush();
-
         return $winner;
+    }
+
+    public function getBestScoreFromResult(array $result): int
+    {
+        $bestScore = 0;
+
+        foreach ($result as $scores) {
+            $score = 0;
+
+            foreach ($scores as $roundScore) {
+                $score += $roundScore;
+            }
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+            } elseif ($score === $bestScore) {
+                $bestScore = 0;
+            }
+        }
+
+        return $bestScore;
     }
 
     public function endGame(Game $game): void
@@ -181,6 +197,18 @@ class GameService
         $game->setStatus(GAME::STATUS_ENDED);
 
         $this->entityManager->persist($game);
+        $this->entityManager->flush();
+    }
+
+    public function setWin(User $user, int $result)
+    {
+        $personalBest = $user->getPersonalBest();
+        $personalBest->setNumOfWins($personalBest->getNumOfWins()+1);
+        $this->entityManager->persist($personalBest);
+
+        $leader = new Leaderboard($user, $result);
+        $this->entityManager->persist($leader);
+
         $this->entityManager->flush();
     }
 }
