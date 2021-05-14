@@ -1,0 +1,1 @@
+docker-compose exec -T --user=application php bin/console app:start-game
