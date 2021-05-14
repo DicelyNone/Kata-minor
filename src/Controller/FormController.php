@@ -15,9 +15,13 @@ class FormController extends AbstractController
     public function index(FormRepository $formRepository): Response
     {
         $forms = $formRepository->findAll();
-        return $this->render('form/index.html.twig', [
-            'controller_name' => 'FormController',
-            'forms' => $forms,
-        ]);
+
+        return $this->render(
+            'form/index.html.twig',
+            [
+                'controller_name' => 'FormController',
+                'forms' => $forms,
+            ]
+        );
     }
 }

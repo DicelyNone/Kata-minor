@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use App\Repository\FormRepository;
 use App\Repository\RoundRepository;
-use App\Service\GameService;
 use App\Service\RoundService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +22,6 @@ class RoundController extends AbstractController
         $roundService->endRound($roundId);
 
         return new Response();
-
     }
 
     /**
@@ -36,18 +32,20 @@ class RoundController extends AbstractController
         $roundId = $request->request->get('roundId');
         $round = $roundRepository->find($roundId);
 
-//        dump($round);
-
-        return new JsonResponse([
-            'isActive' => $round->getIsActive(),
-            'gameStatus' => $round->getGame()->getStatus()
-        ]);
+        return new JsonResponse(
+            [
+                'isActive' => $round->getIsActive(),
+                'gameStatus' => $round->getGame()->getStatus(),
+                'firstUserForm' => $round->getFirstUserForm()->getArea(),
+                'secondUserForm' => $round->getSecondUserForm()->getArea(),
+            ]
+        );
     }
 
     /**
      * @Route("/set-form", name="set-form", methods={"POST", "GET"})
      */
-    public function setForm(RoundService $roundService, Request $request) : Response
+    public function setForm(RoundService $roundService, Request $request): Response
     {
         $roundId = $request->request->get('roundId');
         $user = $request->request->get('user');
@@ -57,5 +55,4 @@ class RoundController extends AbstractController
 
         return new Response();
     }
-
 }
