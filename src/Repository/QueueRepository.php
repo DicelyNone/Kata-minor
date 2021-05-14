@@ -21,8 +21,7 @@ class QueueRepository extends ServiceEntityRepository
             ->orderBy('q.createdAt', 'ASC')
             ->setMaxResults(2)
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function getActiveQueueRowByUser(User $user): ?Queue
@@ -32,7 +31,6 @@ class QueueRepository extends ServiceEntityRepository
             ->andWhere('q.isWaiting = true')
             ->setParameter('val', $user)
             ->getQuery()
-            ->getOneOrNullResult()
-            ;
+            ->getOneOrNullResult();
     }
 }

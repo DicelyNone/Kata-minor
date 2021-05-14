@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Repository\GameRepository;
 use App\Service\GameService;
+use App\Service\RoundService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ class GameController extends AbstractController
     /**
      * @Route("/start", name="start")
      */
-    public function start(GameRepository $gameRepository, GameService $gameService, Request $request): Response
+    public function start(GameRepository $gameRepository, GameService $gameService, RoundService $roundService, Request $request): Response
     {
         //$gameId = $request->request->get('gameId');
         //$game = $gameRepository->find($gameId);
@@ -27,7 +28,9 @@ class GameController extends AbstractController
             $round = $gameService->startRound($game);
 
             if ($round) {
-                $forms[] = $round->getForm();
+                $form = $roundService->getFormInRoundByUser($round, $user);
+
+                $forms[] = $form;
 
                 return $this->render(
                     'form/index.html.twig',

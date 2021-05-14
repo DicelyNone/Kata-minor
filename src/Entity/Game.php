@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\GameRepository;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OrderBy;
 
 /**
  * @ORM\Entity(repositoryClass=GameRepository::class)
@@ -16,9 +16,9 @@ class Game
     public const STATUS_PREPARED = 1;
     public const STATUS_IN_PROGRESS = 2;
     public const STATUS_ENDED = 3;
-
     public const USERS_NUM = 2;
     public const ROUNDS_NUM = 3;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

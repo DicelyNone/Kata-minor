@@ -18,16 +18,6 @@ class Round
     private $id;
 
     /**
-     * @ORM\Column(type="array")
-     */
-    private $formOfUser1 = [];
-
-    /**
-     * @ORM\Column(type="array")
-     */
-    private $formOfUser2 = [];
-
-    /**
      * @ORM\ManyToOne(targetEntity=Game::class, inversedBy="rounds")
      */
     private $game;
@@ -43,9 +33,28 @@ class Round
     private $orderInGame;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Form::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(name="first_user_id", referencedColumnName="id")
      */
-    private $form;
+    private $firstUser;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(name="second_user_id", referencedColumnName="id")
+     */
+    private $secondUser;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Form::class)
+     * @ORM\JoinColumn(name="first_user_form_id", referencedColumnName="id")
+     */
+    private $firstUserForm;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Form::class)
+     * @ORM\JoinColumn(name="second_user_form_id", referencedColumnName="id")
+     */
+    private $secondUserForm;
 
     /**
      * @ORM\Column(type="integer")
@@ -57,12 +66,19 @@ class Round
      */
     private $scoreOfUser2;
 
-    public function __construct(Game $game, Form $form, int $order)
-    {
+    public function __construct(
+        Game $game,
+        User $firstUser,
+        User $secondUser,
+        Form $firstUserForm,
+        Form $secondUserForm,
+        int $order
+    ) {
         $this->game = $game;
-        $this->form = $form;
-        $this->formOfUser1 = $form->getArea();
-        $this->formOfUser2 = $form->getArea();
+        $this->firstUser = $firstUser;
+        $this->secondUser = $secondUser;
+        $this->firstUserForm = $firstUserForm;
+        $this->secondUserForm = $secondUserForm;
         $this->orderInGame = $order;
         $this->isActive = true;
         $this->scoreOfUser1 = 0;
@@ -74,26 +90,50 @@ class Round
         return $this->id;
     }
 
-    public function getFormOfUser1(): ?array
+    public function getFirstUser(): ?User
     {
-        return $this->formOfUser1;
+        return $this->firstUser;
     }
 
-    public function setFormOfUser1(array $formOfUser1): self
+    public function setFirstUser(User $firstUser): self
     {
-        $this->formOfUser1 = $formOfUser1;
+        $this->firstUser = $firstUser;
 
         return $this;
     }
 
-    public function getFormOfUser2(): ?array
+    public function getSecondUser(): ?User
     {
-        return $this->formOfUser2;
+        return $this->secondUser;
     }
 
-    public function setFormOfUser2(array $formOfUser2): self
+    public function setSecondUser(User $secondUser): self
     {
-        $this->formOfUser2 = $formOfUser2;
+        $this->secondUser = $secondUser;
+
+        return $this;
+    }
+
+    public function getFirstUserForm(): ?Form
+    {
+        return $this->firstUserForm;
+    }
+
+    public function setFirstUserForm(Form $firstUserForm): self
+    {
+        $this->firstUserForm = $firstUserForm;
+
+        return $this;
+    }
+
+    public function getSecondUserForm(): ?Form
+    {
+        return $this->secondUserForm;
+    }
+
+    public function setSecondUserForm(Form $secondUserForm): self
+    {
+        $this->secondUserForm = $secondUserForm;
 
         return $this;
     }
@@ -130,18 +170,6 @@ class Round
     public function setOrderInGame(int $orderInGame): self
     {
         $this->orderInGame = $orderInGame;
-
-        return $this;
-    }
-
-    public function getForm(): ?form
-    {
-        return $this->form;
-    }
-
-    public function setForm(?form $form): self
-    {
-        $this->form = $form;
 
         return $this;
     }

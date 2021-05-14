@@ -14,13 +14,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
-
     public const ROLE_APP_USER = 'ROLE_APP_USER';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
-
     public const ROLES = [
         self::ROLE_ADMIN,
-        self::ROLE_APP_USER
+        self::ROLE_APP_USER,
     ];
 
     /**
@@ -92,12 +90,11 @@ class User implements UserInterface
 
     /**
      * A visual identifier that represents this user.
-     *
      * @see UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->username;
+        return (string)$this->username;
     }
 
     /**
@@ -124,7 +121,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -137,7 +134,6 @@ class User implements UserInterface
     /**
      * Returning a salt is only needed, if you are not using a modern
      * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
      * @see UserInterface
      */
     public function getSalt(): ?string

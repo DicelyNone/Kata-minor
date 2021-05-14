@@ -28,11 +28,9 @@ class GameInitListener
         $currUser = $this->security->getUser();
         //dump($currUser, $entity->getUser1(), $entity->getUser2());
         if ($currUser === $entity->getUser1() ||
-                $currUser === $entity->getUser2()) {
-
+            $currUser === $entity->getUser2()) {
             dump("Game was created for you!");
             // TODO add redirect on game page or to controller
         }
-
     }
 }

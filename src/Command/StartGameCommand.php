@@ -9,8 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StartGameCommand extends Command
 {
-    //  php bin/console app:start-game
     protected static $defaultName = 'app:start-game';
+
     private $gameService;
 
     public function __construct(GameService $gameService)
@@ -23,8 +23,7 @@ class StartGameCommand extends Command
     {
         $this
             ->setDescription('Let the battle begin!')
-            ->setHelp('This command will start game for two waiting users')
-        ;
+            ->setHelp('This command will start game for two waiting users');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

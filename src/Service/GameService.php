@@ -71,11 +71,13 @@ class GameService
         $forms = $this->formRepository->findAll();
 
         for ($i = 0; $i < Game::ROUNDS_NUM; ++$i) {
-            $form = $forms[rand(0, count($forms) - 1)];
+            $firstUserForm = $forms[rand(0, count($forms) - 1)];
+            $secondUserForm = $forms[rand(0, count($forms) - 1)];
 
-            $round = new Round($game, $form, $i);
+            $round = new Round($game, $users[0], $users[1], $firstUserForm, $secondUserForm, $i);
 
             $this->entityManager->persist($round);
+
             $game->addRound($round);
         }
 

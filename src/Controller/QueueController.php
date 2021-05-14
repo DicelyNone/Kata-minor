@@ -28,10 +28,9 @@ class QueueController extends AbstractController
             throw new AuthenticationException();
         }
 
-        //$user = $this->getUser();
         $queue = $queueRepository->getActiveQueueRowByUser($user);
 
-        if ($queue){
+        if ($queue) {
             $queue->setIsWaiting(false);
         }
 
@@ -55,10 +54,12 @@ class QueueController extends AbstractController
         $game = $gameRepository->getCurrentGame($user, Game::STATUS_PREPARED);
 
         if ($game) {
-            return new JsonResponse([
-                'gameId' => $game->getId(),
-                'gameStatus' => $game->getStatus(),
-            ]);
+            return new JsonResponse(
+                [
+                    'gameId' => $game->getId(),
+                    'gameStatus' => $game->getStatus(),
+                ]
+            );
         }
 
         return new JsonResponse();
