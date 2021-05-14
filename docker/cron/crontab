@@ -1,1 +1,1 @@
-* * * * *  docker exec --user=application php php -d memory_limit=512M bin/console app:start-game
+* * * * *  docker exec --user=application kata-minor_php_1 php -d memory_limit=512M bin/console app:start-game
