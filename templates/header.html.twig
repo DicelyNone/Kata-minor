@@ -10,6 +10,9 @@
             <input type="hidden" name="user" value="{{ app.user }}">
             <button type="submit" class="btn btn-light">Play</button>
         </form>
+        <form method="post" action="/personal-best">
+            <button type="submit" class="btn btn-light">Personal best</button>
+        </form>
     {% else %}
         <form method="post" action="/login">
             <button type="submit" class="btn btn-light">Sign in</button>

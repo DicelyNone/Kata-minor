@@ -16,9 +16,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * Used to upgrade (rehash) the user's password automatically over time.
-     */
     public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
     {
         if (!$user instanceof User) {
@@ -29,5 +26,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $this->_em->persist($user);
         $this->_em->flush();
+    }
+
+    public function findByUsername(string $username): ?User
+    {
+        return $this->createQueryBuilder('g')
+            ->andWhere('g.username = :username')
+            ->setParameter('username', $username)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

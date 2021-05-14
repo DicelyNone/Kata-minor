@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ parent()}}
+{% endblock %}
+
+{% block body %}
+<div>
+    <h1>Your personal best</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Best score</th>
+            <td>{{ personalBest.bestScore }}</td>
+        </tr>
+        <tr>
+            <th>Number of wins</th>
+            <td>{{ personalBest.numOfWins }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
