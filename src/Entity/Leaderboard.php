@@ -28,6 +28,12 @@ class Leaderboard
      */
     private $result;
 
+    public function __construct(User $user, int $result)
+    {
+        $this->user = $user;
+        $this->result = $result;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
